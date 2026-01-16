@@ -47,6 +47,21 @@ clean_df(train_df)
 # 对test_df进行清洗
 clean_df(test_df)
 
+for col in train_df.columns:
+    if "flag" in col:
+        print(f"Column '{col}' is a flag column")
+        # 1.0 true 0.0 false
+        train_df[col] = train_df[col].map({1.0: 'true', 0.0: 'false'})
+        train_df[col] = train_df[col].astype('bool')
+        
+
+for col in test_df.columns:
+    if "flag" in col:
+        print(f"Column '{col}' is a flag column")
+        # 1.0 true 0.0 false
+        test_df[col] = test_df[col].map({1.0: 'true', 0.0: 'false'})
+        test_df[col] = test_df[col].astype('bool')
+
 # 保存清洗后的DataFrame到csv文件
 train_df.to_csv(os.path.join(workspace, 'data', 'train.csv'), index=False)
 test_df.to_csv(os.path.join(workspace, 'data', 'test.csv'), index=False)
