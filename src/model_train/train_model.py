@@ -11,7 +11,7 @@ import os
 
 warnings.filterwarnings('ignore')
 
-workspace = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+workspace = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 train_df = pd.read_csv(os.path.join(workspace, 'data', 'cluster_train_selected.csv'))
 
 print(f"数据集形状: {train_df.shape}")
@@ -68,7 +68,7 @@ study = optuna.create_study(
 )
 
 print(f"\n开始Optuna超参数优化 ({N_FOLDS}-Fold CV)...")
-study.optimize(objective, n_trials=100, show_progress_bar=True)
+study.optimize(objective, n_trials=200, show_progress_bar=True)
 
 best_params = study.best_params
 best_cv_auc = study.best_value
@@ -168,3 +168,11 @@ importance_save_path = os.path.join(workspace, 'data', 'feature_importance.csv')
 feature_importance.to_csv(importance_save_path, index=False)
 print(f"特征重要性已保存至: {importance_save_path}")
 
+# 预测
+test_df = pd.read_csv(os.path.join(workspace, 'data', 'cluster_test_selected.csv'))
+X_test = test_df
+y_pred_proba = final_model.predict_proba(X_test)[:, 1]
+
+# 保存预测结果
+test_df['fpd1'] = y_pred_proba
+test_df[['fpd1']].to_csv(os.path.join(workspace, 'cluster_submission.csv'), index=False)
